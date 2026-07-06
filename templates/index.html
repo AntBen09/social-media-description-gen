@@ -3,75 +3,140 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Social Post Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serving It Up Raw Copy Generator</title>
     <style>
+        :root {
+            color-scheme: dark;
+            --bg: #0f1014;
+            --panel: rgba(20, 22, 30, 0.92);
+            --panel-border: rgba(255, 255, 255, 0.09);
+            --text: #f5f7fb;
+            --muted: #aeb5c4;
+            --accent: #ff8c42;
+            --accent-2: #ffbf69;
+            --success: #6ee7b7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, Arial, sans-serif;
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 0 20px;
-            background: #17171b;
-            color: #eee;
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(255, 140, 66, 0.18), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(255, 191, 105, 0.12), transparent 30%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        .shell {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 36px 20px 56px;
+        }
+
+        .hero {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 24px;
         }
 
         h1 {
-            font-size: 22px;
-            margin-bottom: 4px;
+            margin: 0;
+            font-size: clamp(32px, 4vw, 56px);
+            line-height: 0.96;
+            letter-spacing: -0.05em;
         }
 
-        p.sub {
-            color: #999;
-            margin-top: 0;
+        .sub {
+            color: var(--muted);
+            max-width: 68ch;
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .form-panel {
+            padding: 20px;
+        }
+
+        .results-panel {
+            padding: 20px;
+            min-height: 540px;
         }
 
         label {
             display: block;
-            margin-top: 16px;
-            margin-bottom: 4px;
-            font-size: 14px;
-            color: #ccc;
+            margin: 16px 0 6px;
+            font-size: 13px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: var(--muted);
         }
 
         input,
         select,
         textarea {
             width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background: #222;
-            color: #eee;
-            font-family: inherit;
-            font-size: 14px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            font: inherit;
         }
 
         textarea {
-            min-height: 70px;
+            min-height: 88px;
             resize: vertical;
         }
 
         .tabs {
             display: flex;
-            gap: 8px;
-            margin-top: 16px;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .tab-btn,
+        button.generate,
+        .copy-btn {
+            border: 0;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: transform 120ms ease, opacity 120ms ease;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background: #222;
-            color: #999;
-            cursor: pointer;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--muted);
             text-align: center;
         }
 
         .tab-btn.active {
-            background: #ffa03e;
-            color: #17171b;
-            border-color: #ffa03e;
-            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #1c1208;
+            font-weight: 700;
         }
 
         .tab-panel {
@@ -83,57 +148,170 @@
             display: block;
         }
 
+        .generate-wrap {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
         button.generate {
-            margin-top: 24px;
             width: 100%;
-            padding: 12px;
-            background: #ffa03e;
-            color: #17171b;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+            padding: 15px 18px;
+            background: linear-gradient(135deg, var(--accent), #ff5f6d);
+            color: #1b0e07;
+            font-weight: 800;
             font-size: 15px;
+        }
+
+        .output-card {
+            margin-bottom: 16px;
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .output-card h3 {
+            margin: 0 0 10px;
+            text-transform: capitalize;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 0;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 7px 11px;
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        .variant {
+            white-space: pre-wrap;
+            line-height: 1.55;
+            color: #eef1f8;
+            margin: 10px 0;
+        }
+
+        .copy-btn {
+            padding: 9px 12px;
+            background: rgba(110, 231, 183, 0.16);
+            color: var(--success);
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 980px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
+    <div class="shell">
+        <div class="hero">
+            <h1>Serving It Up Raw copy generator</h1>
+            <p class="sub">Turn episode notes, transcripts, and live-show highlights into export-ready posts for
+                Facebook, Instagram, and YouTube. Built for fast turnaround after the show.</p>
+        </div>
 
-    <h1>Social Post Generator</h1>
-    <p class="sub">Upload media or paste a transcript, get a description and hashtags</p>
+        <div class="grid">
+            <section class="panel form-panel">
+                <div class="tabs">
+                    <div class="tab-btn active" id="tabMediaBtn" onclick="switchTab('media')">Upload Media</div>
+                    <div class="tab-btn" id="tabTranscriptBtn" onclick="switchTab('transcript')">Paste Transcript</div>
+                </div>
 
-    <div class="tabs">
-        <div class="tab-btn active" id="tabMediaBtn" onclick="switchTab('media')">Upload Media</div>
-        <div class="tab-btn" id="tabTranscriptBtn" onclick="switchTab('transcript')">Paste Transcript</div>
+                <div class="tab-panel active" id="tabMedia">
+                    <label>Video or audio file</label>
+                    <input type="file" id="mediaFile" accept="video/*,audio/*">
+                </div>
+
+                <div class="tab-panel" id="tabTranscript">
+                    <label>Transcript text</label>
+                    <textarea id="transcriptText" placeholder="Paste your transcript or show notes here"></textarea>
+                </div>
+
+                <label>Episode title</label>
+                <input id="title" placeholder="Serving It Up Raw with ...">
+
+                <label>Guest or host focus</label>
+                <input id="guest" placeholder="Guest name or host focus">
+
+                <label>Topics</label>
+                <textarea id="topics" placeholder="Main topics, beats, or talking points"></textarea>
+
+                <label>Best highlights</label>
+                <textarea id="highlights" placeholder="One highlight per line"></textarea>
+
+                <label>Quotes</label>
+                <textarea id="quotes" placeholder="One quote or punchy line per row"></textarea>
+
+                <label>Call to action</label>
+                <textarea id="cta" placeholder="What should viewers do after reading?"></textarea>
+
+                <label>Direction / Context</label>
+                <textarea id="direction" placeholder="Warm, punchy, conversational, and platform-aware."></textarea>
+
+                <label>Platform</label>
+                <select id="platform">
+                    <option value="all">All platforms</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="facebook">Facebook</option>
+                </select>
+
+                <label>Tone</label>
+                <select id="tone">
+                    <option value="warm and conversational">Warm and conversational</option>
+                    <option value="playful and viral">Playful and viral</option>
+                    <option value="bold and punchy">Bold and punchy</option>
+                </select>
+
+                <div class="generate-wrap">
+                    <button class="generate" onclick="generate()">Generate copy pack</button>
+                    <div class="muted">You can upload audio/video or paste the transcript and notes. The generator will
+                        return multiple variants, hashtags, highlights, and YouTube title options.</div>
+                </div>
+            </section>
+
+            <section class="panel results-panel">
+                <h2 style="margin-top:0;">Output</h2>
+                <p class="muted" id="statusText">Waiting for your episode details.</p>
+                <div id="results"></div>
+                <pre id="rawJson" class="hidden"></pre>
+            </section>
+        </div>
     </div>
-
-    <div class="tab-panel active" id="tabMedia">
-        <label>Video or audio file</label>
-        <input type="file" id="mediaFile" accept="video/*,audio/*">
-    </div>
-
-    <div class="tab-panel" id="tabTranscript">
-        <label>Transcript text</label>
-        <textarea id="transcriptText" placeholder="Paste your transcript here"></textarea>
-    </div>
-
-    <label>Direction / Context</label>
-    <textarea id="direction"
-        placeholder="e.g. This is a highlight clip from a comedy podcast episode. Keep it funny and punchy. Or: This is a product launch teaser for a small business, tone should be exciting but professional."></textarea>
-
-    <label>Platform</label>
-    <select id="platform">
-        <option value="general">General</option>
-        <option value="youtube">YouTube</option>
-        <option value="instagram">Instagram</option>
-        <option value="tiktok">TikTok</option>
-        <option value="facebook">Facebook</option>
-    </select>
-
-    <button class="generate" onclick="generate()">Generate</button>
 
     <script>
+        function escapeHtml(value) {
+            return value
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#39;");
+        }
+
         function switchTab(tab) {
             document.getElementById("tabMedia").classList.toggle("active", tab === "media");
             document.getElementById("tabTranscript").classList.toggle("active", tab === "transcript");
@@ -141,26 +319,84 @@
             document.getElementById("tabTranscriptBtn").classList.toggle("active", tab === "transcript");
         }
 
-        async function generate() {
+        function collectFormData() {
             const formData = new FormData();
-
             const mediaFile = document.getElementById("mediaFile").files[0];
-            const transcriptText = document.getElementById("transcriptText").value;
+            const transcriptText = document.getElementById("transcriptText").value.trim();
 
             if (mediaFile) {
                 formData.append("mediaFile", mediaFile);
-            } else if (transcriptText) {
-                formData.append("transcriptText", transcriptText);
-            } else {
-                alert("Upload a file or paste a transcript first");
+            }
+
+            formData.append("transcriptText", transcriptText);
+            formData.append("title", document.getElementById("title").value.trim());
+            formData.append("guest", document.getElementById("guest").value.trim());
+            formData.append("topics", document.getElementById("topics").value.trim());
+            formData.append("highlights", document.getElementById("highlights").value.trim());
+            formData.append("quotes", document.getElementById("quotes").value.trim());
+            formData.append("cta", document.getElementById("cta").value.trim());
+            formData.append("direction", document.getElementById("direction").value.trim());
+            formData.append("platform", document.getElementById("platform").value);
+            formData.append("tone", document.getElementById("tone").value);
+
+            if (!mediaFile && !transcriptText && !document.getElementById("topics").value.trim()) {
+                alert("Upload a file or add transcript/topics first.");
+                return null;
+            }
+
+            return formData;
+        }
+
+        function renderPlatformCard(platformName, payload) {
+            const descriptionHtml = payload.descriptions.map((item, index) => `<div class="variant"><strong>Variant ${index + 1}</strong><br>${escapeHtml(item)}</div>`).join("");
+            const hooksHtml = payload.hooks.map((item, index) => `<div class="variant"><strong>Hook ${index + 1}</strong><br>${escapeHtml(item)}</div>`).join("");
+            const hashtagsHtml = payload.hashtags.map((tag) => `<span class="chip">${escapeHtml(tag)}</span>`).join("");
+            const highlightsHtml = payload.highlightHooks.map((item) => `<div class="variant">${escapeHtml(item)}</div>`).join("");
+            const youtubeTitlesHtml = payload.youtubeTitles.map((item) => `<div class="variant">${escapeHtml(item)}</div>`).join("");
+
+            return `
+                <div class="output-card">
+                    <h3>${escapeHtml(platformName)}</h3>
+                    <div class="muted">${escapeHtml(payload.lengthHint)}</div>
+                    <div class="chip-row">${hashtagsHtml}</div>
+                    ${descriptionHtml}
+                    ${hooksHtml}
+                    ${highlightsHtml}
+                    ${platformName === 'youtube' ? `<div class="variant"><strong>YouTube title options</strong><br>${youtubeTitlesHtml}</div>` : ''}
+                    <button class="copy-btn" onclick='copyPlatform(${JSON.stringify(platformName)}, ${JSON.stringify(payload.descriptions[0])})'>Copy main variant</button>
+                </div>
+            `;
+        }
+
+        async function copyPlatform(platform, text) {
+            await navigator.clipboard.writeText(text);
+            document.getElementById("statusText").textContent = `Copied ${platform} copy to clipboard.`;
+        }
+
+        async function generate() {
+            const formData = collectFormData();
+            if (!formData) {
                 return;
             }
 
-            formData.append("direction", document.getElementById("direction").value);
-            formData.append("platform", document.getElementById("platform").value);
+            document.getElementById("statusText").textContent = "Generating copy pack...";
             const res = await fetch("/generate", { method: "POST", body: formData });
             const data = await res.json();
-            console.log("Response from server:", data);
+            document.getElementById("rawJson").textContent = JSON.stringify(data, null, 2);
+
+            const platforms = data.platforms || {};
+            const sections = Object.entries(platforms).map(([platformName, payload]) => renderPlatformCard(platformName, payload)).join("");
+            const exportMeta = data.export || {};
+
+            document.getElementById("results").innerHTML = `
+                <div class="output-card">
+                    <h3>${escapeHtml(exportMeta.bundleName || "Copy pack")}</h3>
+                    <div class="muted">${escapeHtml(exportMeta.summary || "")}</div>
+                    <div class="chip-row">${(exportMeta.suggestedUses || []).map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join("")}</div>
+                </div>
+                ${sections}
+            `;
+            document.getElementById("statusText").textContent = "Ready to copy or refine.";
         }
     </script>
 

@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, jsonify, render_template, request
+
+from generator import generate_copy_pack
 
 app = Flask(__name__)
 
@@ -10,18 +12,19 @@ def index():
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    direction = request.form.get("direction", "")
-    platform = request.form.get("platform", "")
     transcript_text = request.form.get("transcriptText", "")
     media_file = request.files.get("mediaFile")
 
-    print("---- New submission ----")
-    print("Direction:", direction)
-    print("Platform:", platform)
-    print("Transcript text provided:", bool(transcript_text))
-    print("Media file provided:", media_file.filename if media_file else None)
+    if media_file and not transcript_text:
+        transcript_text = f"Uploaded file: {media_file.filename}"
 
-    return jsonify({"status": "received"})
+    result = generate_copy_pack(request.form, transcript_text)
+    return jsonify(result)
+
+
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"})
 
 
 if __name__ == "__main__":
